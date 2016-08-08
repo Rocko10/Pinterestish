@@ -5,8 +5,8 @@ var mongoose = require('mongoose');
 var UserSchema = mongoose.Schema({
 
     twitter_id: String,
-    twitter_nickname: String,
-    twitter_email: String
+    twitter_username: String,
+    twitter_photo: String
 
 });
 
