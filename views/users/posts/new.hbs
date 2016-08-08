@@ -1,0 +1,52 @@
+<h1>Create a new metal post</h1>
+
+<p>
+    If your link is broken, the image will be replaced with a default
+</p>
+
+<img id="img-view" src="" alt="" />
+
+<form action="/users/create-post" method="post" id="new-post-form">
+
+    <input type="text" name="title" placeholder="Write a title"><br>
+    <input type="text" name="img" oninput="renderLink(this)" placeholder="URL of the image"><br>
+    <button type="button" onclick="sendData()">Accept</button>
+
+</form>
+
+{{#extend 'js'}}
+    <script type="text/javascript">
+
+        var $imgView = document.getElementById('img-view');
+        var $newPostForm = document.getElementById('new-post-form');
+
+        function renderLink(elem){
+
+            $imgView.setAttribute('src', elem.value);
+
+        }
+
+        function sendData(){
+
+            var imgURL = $newPostForm.elements['img'].value;
+            var title = $newPostForm.elements['title'].value;
+            var defaultImg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxIHEBMUDhMQFRMWGBYaDxQVFxYcGBcWIBYaHx0VGhYYIjQiIiYqHx8bITIkJTU3MzA6IyM/RDctNzQtLisBCgoKDQ0NGg8PGjUlHyU3NjE3NTc1ODU3MjcvLS40LTc3KzItNS02Ny03NTA3LTU1Kzc3NS4wKzM3NTU1NzQ1K//AABEIAE8ATwMBIgACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAABwMEBQYIAQL/xAAxEAACAQIEBAQFAwUAAAAAAAABAgADEQQFEiEGMUFRBxMiMlJhcYGRFCNCYqHB4fH/xAAZAQEAAwEBAAAAAAAAAAAAAAAAAQIEAwX/xAAhEQEAAgEDBAMAAAAAAAAAAAAAAQIDBBEhEkGh8DGBkf/aAAwDAQACEQMRAD8AnGIiAiIgIiICUsViEwiM9RgqqLsxNgJVkVeLSYviTRQyxKlZU1jFKjAC5tpJ1EA20mxvtcwM3wp4nYXiPFPh1V6ZufIZyLVBblbo2xsNwbc5vUj/AMPvDxMlCYjG/u4yy+pt/KsLBB0JVfTqH22kgQEREBERAREw+eZsMJalTP7rj0bXselwO/IQmI3fOcZgzMtLDrrLNpqlTbQLd+m295eZPliZVTCJuebsebHuZQyTKhgQXcL5r71COnyF5lZCZntBERJVIiIHy7BASxAAFyTyA7yPz4ivm+NXC5VRSpcnVWqkhLDmwC727d574xcQjLsGaFNh5tbZwDuKX8ie1/b+ZBuXZhWy6oKtCpUpuP5pa4v9dvzOdrc7Q9HT6Ws4LZb/AE6fzrN1yxRfeo3sUf7+9r85acPZYwPnVyWcljS1DdVPU9ie3SaD4X5u/EuKK41jVenT169rOAygAj73t3F5LgN+UuwTxD2IiSqREQPGOkXPLrIA448TsRmVZ6eEdqVBWKpoNmextqZue/MAWtJ8xFPzkZeWpSL/AFFpyHmuDfLq9WlUBD03ZWB7gn/s55Jlu0NaTaZsrVsU+NJNRySba2JLMB8Rubm08xOIGAUn0m4/bF7gnow7jrLBgdiuzDkf8GKtEYm22gagWF9gOoBkV6WnVRmm29fiPf1c8LZhisLV10ndQSAbXux6Ktt7nltOp+DcvfK8DQp1iTUsWq3JJ1uxdhc9i1prHAXhtQyQU6+JHmYgAFVPso/0qvUj4jJBl4jnd517RFOivPvYiIlnEiIgJFXjDwA2bD9ZgkvXUD9RTXnUUD3juwH5H0ElWJExuvjyTS3VDjVtrhvSRfY879rTNcL4B83xlGhSuPMdVqJe/oBBYsB0sLye+K/DLA8SOajK9GsfdUokDV82U7E/PnLrgzgHCcIktR11KzCzVahBa3wqBsB/cykUar6ubc+G1xEToxEREBERA//Z';
+
+            if(imgURL.length < 5 || title.length < 3){
+                return;
+            }
+
+            fetch(imgURL)
+            .then(function(res){
+
+                if(res.status !== 200){
+                    $newPostForm.elements['img'].value = defaultImg;
+                }
+                $newPostForm.submit();
+
+            });
+
+        }
+
+    </script>
+{{/extend}}
