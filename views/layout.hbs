@@ -6,22 +6,9 @@
         {{{ block 'css' }}}
     </head>
     <body>
+        {{> header}}
 
-        {{#if errors }}
-            {{#each errors}}
-                <p>
-                    {{this}}
-                </p>
-            {{/each}}
-        {{/if}}
-
-        {{#if infos }}
-            {{#each infos}}
-                <p>
-                    {{this}}
-                </p>
-            {{/each}}
-        {{/if}}
+        {{> messages}}
 
         {{{body}}}
 

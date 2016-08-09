@@ -1,0 +1,10 @@
+<header>
+
+    {{#if currentUser}}
+        <span>{{currentUser.twitter_username}}</span>
+        <img src="{{currentUser.twitter_photo}}" alt="{{currentUser.twitter_username}}" />
+        <a href="/users/new-post">New Post</a>
+        <a href="/users/">Main Menu</a>
+    {{/if}}
+
+</header>

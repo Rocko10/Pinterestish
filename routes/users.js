@@ -5,9 +5,6 @@ var Post = require('./../models/post');
 
 var router = express.Router();
 
-/* TODO 1 create partial header with user info */
-/* TODO 2 list on '/' all my posts */
-
 router.use((req, res, next) => {
 
     res.locals.currentUser = req.user,
@@ -20,7 +17,14 @@ router.use((req, res, next) => {
 
 router.get('/', onlyAuth, function(req, res, next) {
 
-    res.render('users/profile');
+    Post.find({user_id: req.user.id}, (err, posts) => {
+
+        if(err){ return next(err); }
+
+        res.render('users/profile', {posts});
+
+    });
+
 
 });
 
