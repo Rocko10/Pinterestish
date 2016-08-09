@@ -17,12 +17,18 @@ router.use((req, res, next) => {
 
 router.get('/', onlyAuth, function(req, res, next) {
 
-    Post.find({user_id: req.user.id}, (err, posts) => {
-
-        if(err){ return next(err); }
-
-        res.render('users/profile', {posts});
-
+    Post
+    .find({'favorites.user_id': req.user.id})
+    .exec()
+    .then(postsFaved => {
+        Post
+        .find({'favorites.user_id': {
+            $ne: req.user.id
+        }})
+        .exec()
+        .then(posts => {
+            res.render('users/profile', {postsFaved, posts});
+        });
     });
 
 
@@ -88,12 +94,58 @@ router.delete('/posts/delete', onlyAuth, (req, res, next) => {
 });
 
 /* through XMLHttpRequest */
-router.patch('/posts/favorite', (req, res) => {
+router.patch('/posts/favorite', onlyAuth, (req, res) => {
 
-    console.log('FAVORITING...');
-    console.log(req.body);
+    let postID = req.body.postID;
 
-    res.end('FAVS')
+    Post.findOne({_id: postID}, (err, post) => {
+
+        if(err){ return res.status(500).end('Error'); }
+
+        if(!post){ return res.status(404).end('Not found'); }
+
+        /* check if the user already voted */
+        for(let u of post.favorites){
+            if(u.user_id.equals(req.user.id)){
+                return res.status(405).end('Already voted');
+            }
+        }
+
+        /* add favorite to DB */
+        post.favorites.push({user_id: req.user.id});
+
+        post.save()
+        .then(doc => { res.send('OK') });
+
+    });
+
+});
+
+/* through XMLHttpRequest */
+router.patch('/posts/unfavorite', onlyAuth, (req, res) => {
+
+    let postID = req.body.postID;
+
+    Post.findOne({_id: postID, 'favorites.user_id': req.user.id})
+    .exec()
+    .then(post => {
+
+        if(!post){ return res.status(404).end('Not found'); }
+
+        /* remove the user id from the array of favorites */
+        for(let i = 0; i < post.favorites.length; i++){
+            if(post.favorites[i].user_id.equals(req.user.id)){
+                post.favorites.splice(i, 1);
+                break;
+            }
+        }
+
+        post.save()
+        .then(doc => {
+            res.send('[OK]: Unfav');
+        });
+
+    });
 
 });
 

@@ -37,15 +37,31 @@
                         {{this.title}}
                     </p>
                     <button onclick="favPost('{{this.id}}')" class="unfav" data-postid="{{this.id}}">Fav</button>
-                    <span>Favs: {{this.favorites.length}}</span>
+                    <p>
+                        Favs: <span class="favorites-count">{{this.favorites.length}}</span>
+                    </p>
                     <button onclick="deletePost(this)" data-postid="{{this.id}}">Delete</button>
                 </div>
         {{/each}}
     </div>
-{{else}}
-    <p>
-        No posts yet
-    </p>
+{{/if}}
+
+{{#if postsFaved}}
+    <div class="grid">
+        {{#each postsFaved}}
+                <div class="grid-item">
+                    <img src="{{this.image}}" alt="{{this.title}}" />
+                    <p>
+                        {{this.title}}
+                    </p>
+                    <button onclick="unfavPost('{{this.id}}')" class="fav" data-postid="{{this.id}}">Unfav</button>
+                    <p>
+                        Favs: <span class="favorites-count">{{this.favorites.length}}</span>
+                    </p>
+                    <button onclick="deletePost(this)" data-postid="{{this.id}}">Delete</button>
+                </div>
+        {{/each}}
+    </div>
 {{/if}}
 
 {{#extend 'js'}}
@@ -81,6 +97,11 @@
             elem.setAttribute('class', 'fav');
             elem.setAttribute('onclick', "unfavPost('" + postID + "')");
 
+            /* update count fav */
+            var $favoriteCount = elem.parentNode.children[3].getElementsByClassName('favorites-count')[0];
+            var favoriteCount = +$favoriteCount.innerHTML;
+            $favoriteCount.innerHTML = ++favoriteCount;
+
             var timer = setTimeout(function(){
 
                 sendFav(postID);
@@ -104,12 +125,22 @@
             elem.setAttribute('class', 'unfav');
             elem.setAttribute('onclick', "favPost('" + postID + "')");
 
+            /* update count fav */
+            var $favoriteCount = elem.parentNode.children[3].getElementsByClassName('favorites-count')[0];
+            var favoriteCount = +$favoriteCount.innerHTML;
+            $favoriteCount.innerHTML = --favoriteCount;
+
+            if(timers.length === 0){
+                return sendUnfav(postID);
+            }
+
             for(var i = 0; i < timers.length; i++){
                 if(timers[i].id === postID){
                     clearTimeout(timers[i].timer);
                     timers.splice(i, 1);
                     break;
                 }
+                /* the post is actually favorited, and there is timers scheduled */
                 if(i === timers.length - 1){
                     sendUnfav(postID);
                 }
@@ -130,6 +161,24 @@
             }
 
             xhttp.open('PATCH', '/users/posts/favorite', true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send('postID=' + postID.trim());
+
+        }
+
+        function sendUnfav(postID){
+
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.onreadystatechange = function(){
+
+                if(xhttp.status === 200 && xhttp.readyState === 4){
+                    console.log(xhttp.responseText);
+                }
+
+            }
+
+            xhttp.open('PATCH', '/users/posts/unfavorite', true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send('postID=' + postID.trim());
 
