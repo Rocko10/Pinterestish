@@ -22,6 +22,7 @@
                         {{this.title}}
                     </p>
                     <span>Favs: {{this.favorites}}</span>
+                    <button onclick="deletePost(this)" data-postid="{{this.id}}">Delete</button>
                 </div>
         {{/each}}
     </div>
@@ -34,6 +35,21 @@
 {{#extend 'js'}}
     <script src="https://npmcdn.com/masonry-layout@4.1/dist/masonry.pkgd.min.js"></script>
     <script type="text/javascript">
+
         var masonry = new Masonry('.grid',{ itemSelector: '.grid-item' });
+
+        function deletePost(elem){
+            var postID = elem.dataset.postid;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    console.log(xhttp.responseText);
+                }
+            }
+            xhttp.open("DELETE", "/users/posts/delete", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("postID=" + postID);
+        }
+
     </script>
 {{/extend}}

@@ -64,6 +64,29 @@ router.post('/create-post', onlyAuth, (req, res, next) => {
 
 });
 
+router.delete('/posts/delete', onlyAuth, (req, res, next) => {
+
+    let postID = req.body.postID;
+
+    Post.findOne({_id: postID}, (err, post) => {
+
+        if(err){ return res.status(500).end(err.message); }
+
+        if(!post){ return res.status(404).end('Not founded') }
+
+        /* no errors and post founded */
+        post.remove(err => {
+
+            if(err){ return res.status(500).end(err.message); }
+
+            res.end('Done');
+
+        });
+
+    });
+
+});
+
 function onlyAuth(req, res, next){
 
     if(!req.isAuthenticated()){
