@@ -6,7 +6,9 @@ var PostSchema = mongoose.Schema({
 
     image: String,
     title: String,
-    favorites: Number,
+    favorites: [{
+        user_id: mongoose.Schema.Types.ObjectId
+    }],
     user_id: mongoose.Schema.Types.ObjectId
 
 });

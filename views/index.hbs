@@ -1,6 +1,51 @@
-{{#extend 'css' }}
-{{/extend}}
-
 <h1>Welcome to the Metal</h1>
 
 <button onclick="location.href='/auth/twitter'">Twitter Login</button>
+
+<button onclick="favorite(1111111)" data-postid="1111111">Favorite</button>
+<button onclick="favorite(2222222)" data-postid="2222222">Test 2</button>
+
+{{#extend 'js'}}
+    <script type="text/javascript">
+        var count = 0;
+        var timers = [];
+
+        function favorite(postID){
+            var elem = document.querySelector("[data-postid='"+ postID +"']");
+            elem.setAttribute('onclick', 'unfavorite(' + postID + ')');
+            elem.innerHTML = 'Unfavorite';
+
+            timer = setTimeout(function(){
+                console.log('Faving ' + postID);
+
+                /* when end exec, remove timer from array */
+                for(var i = 0; i < timers.length; i++){
+
+                    if(timers[i].id === postID){
+                        timers.splice(i, 1);
+                    }
+
+                }
+            }, 3000);
+
+            timers.push({id: postID, timer});
+            console.log(timers);
+        }
+
+        function unfavorite(postID){
+
+            for(var i = 0; i < timers.length; i++){
+                if(timers[i].id === postID){
+                    clearTimeout(timers[i].timer);
+                    timers.splice(i, 1);
+                }
+            }
+
+            var elem = document.querySelector("[data-postid='"+ postID +"']");
+            elem.setAttribute('onclick', 'favorite(' + postID + ')');
+            elem.innerHTML = 'Favorite';
+
+
+        }
+    </script>
+{{/extend}}

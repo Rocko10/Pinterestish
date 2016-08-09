@@ -47,7 +47,6 @@ router.post('/create-post', onlyAuth, (req, res, next) => {
     let newPost = new Post({
         image,
         title,
-        favorites: 0,
         user_id: req.user.id
     });
 
@@ -64,6 +63,7 @@ router.post('/create-post', onlyAuth, (req, res, next) => {
 
 });
 
+/* through XMLHttpRequest */
 router.delete('/posts/delete', onlyAuth, (req, res, next) => {
 
     let postID = req.body.postID;
@@ -84,6 +84,16 @@ router.delete('/posts/delete', onlyAuth, (req, res, next) => {
         });
 
     });
+
+});
+
+/* through XMLHttpRequest */
+router.patch('/posts/favorite', (req, res) => {
+
+    console.log('FAVORITING...');
+    console.log(req.body);
+
+    res.end('FAVS')
 
 });
 

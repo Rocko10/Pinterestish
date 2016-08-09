@@ -6,6 +6,21 @@
             text-align: center;
         }
 
+        .fav{
+            background-color: #3e842e;
+            border: 1px solid #3e842e;
+            color: white;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .unfav{
+            background-color: #4444c1;
+            border: 1px solid #4444c1;
+            color: white;
+            cursor: pointer;
+            padding: 4px;
+        }
+
     </style>
 {{/extend}}
 
@@ -21,7 +36,8 @@
                     <p>
                         {{this.title}}
                     </p>
-                    <span>Favs: {{this.favorites}}</span>
+                    <button onclick="favPost('{{this.id}}')" class="unfav" data-postid="{{this.id}}">Fav</button>
+                    <span>Favs: {{this.favorites.length}}</span>
                     <button onclick="deletePost(this)" data-postid="{{this.id}}">Delete</button>
                 </div>
         {{/each}}
@@ -35,6 +51,8 @@
 {{#extend 'js'}}
     <script src="https://npmcdn.com/masonry-layout@4.1/dist/masonry.pkgd.min.js"></script>
     <script type="text/javascript">
+
+        var timers = [];
 
         var masonry = new Masonry('.grid',{ itemSelector: '.grid-item' });
 
@@ -55,6 +73,66 @@
         function deletePostDOM(elem){
             /* parentNode.removeChild(childNode) */
             (document.getElementsByClassName('grid')[0]).removeChild(elem.parentNode);
+        }
+
+        function favPost(postID){
+            var elem = document.querySelector(".unfav[data-postid='" + postID + "']");
+            elem.innerHTML = 'Unfav';
+            elem.setAttribute('class', 'fav');
+            elem.setAttribute('onclick', "unfavPost('" + postID + "')");
+
+            var timer = setTimeout(function(){
+
+                sendFav(postID);
+
+                for(var i = 0; i < timers.length; i++){
+                    if(timers[i].id === postID){
+                        timers.splice(i, 1);
+                        break;
+                    }
+                }
+
+            }, 3000);
+
+            timers.push({id: postID, timer});
+
+        }
+
+        function unfavPost(postID){
+            var elem = document.querySelector(".fav[data-postid='" + postID + "']");
+            elem.innerHTML = 'Fav';
+            elem.setAttribute('class', 'unfav');
+            elem.setAttribute('onclick', "favPost('" + postID + "')");
+
+            for(var i = 0; i < timers.length; i++){
+                if(timers[i].id === postID){
+                    clearTimeout(timers[i].timer);
+                    timers.splice(i, 1);
+                    break;
+                }
+                if(i === timers.length - 1){
+                    sendUnfav(postID);
+                }
+            }
+
+        }
+
+        function sendFav(postID){
+
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.onreadystatechange = function(){
+
+                if(xhttp.status === 200 && xhttp.readyState === 4){
+                    console.log(xhttp.responseText);
+                }
+
+            }
+
+            xhttp.open('PATCH', '/users/posts/favorite', true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send('postID=' + postID.trim());
+
         }
 
     </script>
