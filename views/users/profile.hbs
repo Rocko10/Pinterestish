@@ -39,16 +39,22 @@
         var masonry = new Masonry('.grid',{ itemSelector: '.grid-item' });
 
         function deletePost(elem){
+
             var postID = elem.dataset.postid;
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function(){
                 if (xhttp.readyState == 4 && xhttp.status == 200) {
-                    console.log(xhttp.responseText);
+                    deletePostDOM(elem);
                 }
             }
             xhttp.open("DELETE", "/users/posts/delete", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send("postID=" + postID);
+        }
+
+        function deletePostDOM(elem){
+            /* parentNode.removeChild(childNode) */
+            (document.getElementsByClassName('grid')[0]).removeChild(elem.parentNode);
         }
 
     </script>
